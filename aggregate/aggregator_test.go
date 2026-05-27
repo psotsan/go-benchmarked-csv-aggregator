@@ -104,10 +104,11 @@ func TestAggregateLines(t *testing.T) {
 
 	for _, tt := range als {
 		t.Run(tt.name, func(t *testing.T) {
-			got, errs := AggregateLines(tt.lines)
-			gotErr := len(errs)
+			sErrs := make([]error, 0)
+			got := AggregateLines(tt.lines, &sErrs)
+			gotErr := len(sErrs)
 			if gotErr != tt.errors {
-				for _, err := range errs {
+				for _, err := range sErrs {
 					fmt.Println(err)
 				}
 				t.Fatalf("AggregateLines(%q): expected %d errors, got %d errors", tt.name, tt.errors, gotErr)
