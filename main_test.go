@@ -69,7 +69,7 @@ sales: 70.0`,
 Aggregation:
 purchases: 20.0
 sales: 10.0`,
-			errWWant: "strconv.ParseFloat: parsing \"twenty\": invalid syntax\nLine 4: expected length 2. Got length 3\nstrconv.ParseFloat: parsing \"^23\": invalid syntax\n\n",
+			errWWant: "strconv.ParseFloat: parsing \"twenty\": invalid syntax\nstrconv.ParseFloat: parsing \"7a6\": invalid syntax\nstrconv.ParseFloat: parsing \"^23\": invalid syntax\n\n",
 		},
 	}
 
