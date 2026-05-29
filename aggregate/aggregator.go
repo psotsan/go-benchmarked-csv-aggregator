@@ -48,11 +48,19 @@ func keysToStrSlice(m map[string]float64) []string {
 
 func AggregateLines(lines []string, errs *[]error) map[string]float64 {
 	agg := make(map[string]float64)
-	// errs := make([]error, 0)
 	n := 0
 
 	for _, l := range lines {
 		n++
+
+		l = strings.TrimLeft(l, " ")
+		l = strings.TrimLeft(l, "\t")
+		l = strings.TrimLeft(l, " ")
+
+		if l == "" || strings.HasPrefix(l, "#") {
+			continue
+		}
+
 		s, err := splitValidateLine(l)
 		if err != nil {
 			*errs = append(*errs, fmt.Errorf("Line %d: %v", n, err))

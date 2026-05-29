@@ -19,6 +19,16 @@ func TestAggregateLines(t *testing.T) {
 			want:  map[string]float64{"sales": 10},
 		},
 		{
+			name:  "single valid line with commented line",
+			lines: []string{"sales,10", "#sales,50"},
+			want:  map[string]float64{"sales": 10},
+		},
+		{
+			name:  "single valid line with empty line",
+			lines: []string{"sales,10", " \t "},
+			want:  map[string]float64{"sales": 10},
+		},
+		{
 			name:  "single valid line with spaces",
 			lines: []string{"  sales  , 10 "},
 			want:  map[string]float64{"sales": 10},
