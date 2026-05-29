@@ -1,0 +1,5 @@
+purchases, 20
+sales, twenty
+sales, 10
+sales, 15, 80
+purchases, ^23

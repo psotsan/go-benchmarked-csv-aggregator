@@ -15,17 +15,24 @@ type config struct {
 	help bool
 }
 
-func parseArgs(c *config, args []string) (*flag.FlagSet, error) {
+func trimAll(s string) string {
+	s = strings.Trim(s, " ")
+	s = strings.Trim(s, "\t")
+	s = strings.Trim(s, "\n")
+	return s
+}
+
+func parseArgs(c *config, args []string, errW io.Writer) (*flag.FlagSet, error) {
 	name := os.Args[0]
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
-	fs.SetOutput(io.Discard)
+	fs.SetOutput(errW)
 
 	fs.StringVar(&c.path, "path", "", "file path")
 	fs.BoolVar(&c.help, "help", false, "show help")
 
 	fs.Usage = func() {
-		fmt.Fprintf(os.Stderr, "usage %s [options]\n", name)
-		fmt.Fprintln(os.Stderr, "Options:")
+		fmt.Fprintf(errW, "usage: %s [options]\n", name)
+		fmt.Fprintln(errW, "Options:")
 		fs.PrintDefaults()
 	}
 
@@ -33,37 +40,46 @@ func parseArgs(c *config, args []string) (*flag.FlagSet, error) {
 	return fs, err
 }
 
-func main() {
+func run(args []string, r io.Reader, w, errW io.Writer) int {
 	var c config
-	args := os.Args[1:]
 
-	fs, err := parseArgs(&c, args)
+	fs, err := parseArgs(&c, args, errW)
+	if err != nil {
+		return 1
+	}
 
 	if c.help {
 		fs.Usage()
-		os.Exit(0)
+		return 0
 	}
 
-	if err != nil {
-		fmt.Println(err)
-		fs.Usage()
-		os.Exit(1)
-	}
-
-	var r *os.File = os.Stdin
 	if c.path != "" {
 		r, err = os.Open(c.path)
 		if err != nil {
 			e := fmt.Errorf("Could not open file %s", c.path)
-			fmt.Fprintln(os.Stderr, e)
-			os.Exit(1)
+			fmt.Fprintln(errW, e)
+			return 1
 		}
 	}
 
 	var sb, errSb strings.Builder
 
 	aggregate.Process(r, &sb, &errSb)
-	fmt.Println()
-	fmt.Println("Aggregation:")
-	fmt.Println(sb.String())
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "Aggregation:")
+	fmt.Fprintln(w, sb.String())
+	fmt.Fprintln(errW, errSb.String())
+
+	return 0
+}
+
+func main() {
+	args := os.Args[1:]
+	r := os.Stdin
+	w := os.Stdout
+	errW := os.Stderr
+
+	exit := run(args, r, w, errW)
+
+	os.Exit(exit)
 }

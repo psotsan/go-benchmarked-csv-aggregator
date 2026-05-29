@@ -131,30 +131,20 @@ func TestAggregateLines(t *testing.T) {
 }
 
 func TestProcess(t *testing.T) {
-	var r1 *strings.Reader = strings.NewReader(`sales, 10
-	purchases, 19
-	sales, 3
-	purchases, 11
-	sales, 2`)
-
-	var r2 *strings.Reader = strings.NewReader(`purchases, 20
-	sales, twenty
-	sales, 10
-	sales, 15, 80
-	purchases, ^23`)
-
-	var r3 *strings.Reader = strings.NewReader(strings.Repeat("sales, 10\n", lineLimit+1))
-
 	ps := []struct {
 		name    string
-		r       *strings.Reader
+		r       strings.Reader
 		want    string
 		wantMap map[string]float64
 		errors  int
 	}{
 		{
 			name: "5 valid lines with 2 keys",
-			r:    r1,
+			r: *strings.NewReader(`sales, 10
+	purchases, 19
+	sales, 3
+	purchases, 11
+	sales, 2`),
 			want: "purchases: 30.0\nsales: 15.0\n",
 			wantMap: map[string]float64{
 				"sales":     15,
@@ -163,7 +153,11 @@ func TestProcess(t *testing.T) {
 		},
 		{
 			name: "3 invalid  lines and 2 valid lines",
-			r:    r2,
+			r: *strings.NewReader(`purchases, 20
+	sales, twenty
+	sales, 10
+	sales, 15, 80
+	purchases, ^23`),
 			want: "purchases: 20.0\nsales: 10.0\n",
 			wantMap: map[string]float64{
 				"purchases": 20,
@@ -173,7 +167,7 @@ func TestProcess(t *testing.T) {
 		},
 		{
 			name:    "limit exceeded",
-			r:       r3,
+			r:       *strings.NewReader(strings.Repeat("sales, 10\n", lineLimit+1)),
 			wantMap: nil,
 			errors:  1,
 		},
@@ -183,7 +177,7 @@ func TestProcess(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var sb, errSb strings.Builder
 			var gotErrW int
-			got, errs := Process(tt.r, &sb, &errSb)
+			got, errs := Process(&tt.r, &sb, &errSb)
 			gotErr := len(errs)
 			errW := strings.Trim(errSb.String(), "\n")
 
