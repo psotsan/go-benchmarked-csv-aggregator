@@ -47,7 +47,7 @@ sales: 15.0`,
 		},
 		{
 			name: "input file",
-			args: []string{"-path=test-file.txt"},
+			args: []string{"-path=test-files/test-file.csv"},
 			wWant: `
 Aggregation:
 purchases: 17.0
@@ -55,8 +55,8 @@ sales: 70.0`,
 		},
 		{
 			name:     "non-existant inputfile",
-			args:     []string{"-path=inexistant-file.txt"},
-			errWWant: "Could not open file inexistant-file.txt\n",
+			args:     []string{"-path=inexistant-file.csv"},
+			errWWant: "Could not open file inexistant-file.csv\n",
 		},
 		{
 			name:  "empty input",
@@ -64,7 +64,7 @@ sales: 70.0`,
 		},
 		{
 			name: "3 invalid lines and 2 valid lines",
-			args: []string{"-path=test-valid-and-invalid.txt"},
+			args: []string{"-path=test-files/test-valid-and-invalid.csv"},
 			wWant: `
 Aggregation:
 purchases: 20.0

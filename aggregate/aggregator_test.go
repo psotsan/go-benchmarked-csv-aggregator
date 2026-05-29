@@ -217,3 +217,14 @@ func TestProcess(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkProcess(b *testing.B) {
+	lines := strings.Repeat("sales, 10", 100_000)
+	r := strings.NewReader(lines)
+	var w strings.Builder
+	var errW strings.Builder
+
+	for b.Loop() {
+		_, _ = Process(r, &w, &errW)
+	}
+}
