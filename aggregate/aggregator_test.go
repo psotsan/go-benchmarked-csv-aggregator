@@ -116,7 +116,7 @@ func TestAggregateLines(t *testing.T) {
 	for _, tt := range als {
 		t.Run(tt.name, func(t *testing.T) {
 			sErrs := make([]error, 0)
-			got := AggregateLines(tt.lines, &sErrs)
+			got := aggregateLines(tt.lines, &sErrs)
 			gotErr := len(sErrs)
 			if gotErr != tt.errors {
 				for _, err := range sErrs {

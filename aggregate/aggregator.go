@@ -46,7 +46,10 @@ func keysToStrSlice(m map[string]float64) []string {
 	return s
 }
 
-func AggregateLines(lines []string, errs *[]error) map[string]float64 {
+func aggregateLines(lines []string, errs *[]error) map[string]float64 {
+	// processes a batch of lines, skipping empty lines and comments (#).
+	// For each valid CSV line, it accumulates the numeric value under the key.
+	// Errors are appended to the provided slice.
 	agg := make(map[string]float64)
 	n := 0
 
@@ -85,6 +88,7 @@ func AggregateLines(lines []string, errs *[]error) map[string]float64 {
 	return agg
 }
 
+// Process reads the input and aggregates the lines. It writes to stdout, stderr and returns the map of values and slice of errors.
 func Process(r io.Reader, w io.Writer, errW io.Writer) (map[string]float64, []error) {
 	var batch []string
 	errs := make([]error, 0)
@@ -102,7 +106,7 @@ func Process(r io.Reader, w io.Writer, errW io.Writer) (map[string]float64, []er
 		batch = append(batch, scanner.Text())
 	}
 
-	ret := AggregateLines(batch, &errs)
+	ret := aggregateLines(batch, &errs)
 
 	for _, err := range errs {
 		fmt.Fprintln(errW, err)
