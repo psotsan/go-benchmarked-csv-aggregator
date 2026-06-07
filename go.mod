@@ -1,3 +1,3 @@
 module github.com/psotsan/go-benchmarked-csv-aggregator
 
-go 1.26.2
+go 1.25.10
