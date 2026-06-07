@@ -31,7 +31,7 @@ jobs:
         - name: Setup Go
           uses: actions/setup-go@v6
           with:
-            go-version: 'latest'
+            go-version: 'stable'
 
         - name: Run benchmarks
           run: go test -bench . -run=^$ -benchmem ./... | tee benchmark.txt

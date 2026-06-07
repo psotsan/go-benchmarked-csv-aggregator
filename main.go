@@ -31,8 +31,12 @@ func parseArgs(c *config, args []string, errW io.Writer) (*flag.FlagSet, error) 
 	fs.BoolVar(&c.help, "help", false, "show help")
 
 	fs.Usage = func() {
-		fmt.Fprintf(errW, "usage: %s [options]\n", name)
-		fmt.Fprintln(errW, "Options:")
+		if _, err := fmt.Fprintf(errW, "usage: %s [options]\n", name); err != nil {
+			return
+		}
+		if _, err := fmt.Fprintln(errW, "Options:"); err != nil {
+			return
+		}
 		fs.PrintDefaults()
 	}
 
@@ -56,8 +60,10 @@ func run(args []string, r io.Reader, w, errW io.Writer) int {
 	if c.path != "" {
 		r, err = os.Open(c.path)
 		if err != nil {
-			e := fmt.Errorf("Could not open file %s", c.path)
-			fmt.Fprintln(errW, e)
+			e := fmt.Errorf("could not open file %s", c.path)
+			if _, err := fmt.Fprintln(errW, e); err != nil {
+				return 1
+			}
 			return 1
 		}
 	}
@@ -65,10 +71,11 @@ func run(args []string, r io.Reader, w, errW io.Writer) int {
 	var sb, errSb strings.Builder
 
 	aggregate.Process(r, &sb, &errSb)
-	fmt.Fprintln(w)
-	fmt.Fprintln(w, "Aggregation:")
-	fmt.Fprintln(w, sb.String())
-	fmt.Fprintln(errW, errSb.String())
+	// Ignoring write errors to sdout/stderr
+	_, _ = fmt.Fprintln(w)
+	_, _ = fmt.Fprintln(w, "Aggregation:")
+	_, _ = fmt.Fprintln(w, sb.String())
+	_, _ = fmt.Fprintln(errW, errSb.String())
 
 	return 0
 }

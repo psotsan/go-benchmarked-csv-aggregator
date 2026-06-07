@@ -66,7 +66,7 @@ func aggregateLines(lines []string, errs *[]error) map[string]float64 {
 
 		s, err := splitValidateLine(l)
 		if err != nil {
-			*errs = append(*errs, fmt.Errorf("Line %d: %v", n, err))
+			*errs = append(*errs, fmt.Errorf("line %d: %v", n, err))
 			continue
 		}
 
@@ -116,7 +116,9 @@ func Process(r io.Reader, w io.Writer, errW io.Writer) (map[string]float64, []er
 	sort.Strings(sl)
 
 	for _, s := range sl {
-		fmt.Fprintf(w, "%s: %.1f\n", s, ret[s])
+		if _, err := fmt.Fprintf(w, "%s: %.1f\n", s, ret[s]); err != nil {
+			errs = append(errs, fmt.Errorf("failed to write result: %w", err))
+		}
 	}
 
 	return ret, errs
