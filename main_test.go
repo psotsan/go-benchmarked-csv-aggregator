@@ -56,7 +56,7 @@ sales: 70.0`,
 		{
 			name:     "non-existant inputfile",
 			args:     []string{"-path=inexistant-file.csv"},
-			errWWant: "Could not open file inexistant-file.csv\n",
+			errWWant: "could not open file inexistant-file.csv\n",
 		},
 		{
 			name:  "empty input",

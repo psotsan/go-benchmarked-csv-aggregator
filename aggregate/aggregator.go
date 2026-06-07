@@ -100,7 +100,9 @@ func Process(r io.Reader, w io.Writer, errW io.Writer) (map[string]float64, []er
 		if n > lineLimit {
 			err := fmt.Errorf("Process: r exceeds maximum line limit")
 			errs = append(errs, err)
-			fmt.Fprintln(errW, err)
+			if _, err := fmt.Fprintln(errW, err); err != nil {
+				errs = append(errs, fmt.Errorf("failed to write result: %w", err))
+			}
 			return nil, errs
 		}
 		batch = append(batch, scanner.Text())
@@ -109,7 +111,9 @@ func Process(r io.Reader, w io.Writer, errW io.Writer) (map[string]float64, []er
 	ret := aggregateLines(batch, &errs)
 
 	for _, err := range errs {
-		fmt.Fprintln(errW, err)
+		if _, e := fmt.Fprintln(errW, err); e != nil {
+			errs = append(errs, fmt.Errorf("failed to write result: %w", e))
+		}
 	}
 
 	sl := keysToStrSlice(ret)

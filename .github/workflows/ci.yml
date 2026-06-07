@@ -36,12 +36,6 @@ jobs:
         - name: Run benchmarks
           run: go test -bench . -run=^$ -benchmem ./... | tee benchmark.txt
 
-        - name: Store benchmark results
-          uses: benchmark-action/github-action-benchmark@v1
-          with:
-            tool: 'go'
-            output-file-path: benchmark.txt
-
     lint:
       runs-on: ubuntu-latest
       steps:
