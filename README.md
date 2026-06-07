@@ -1,4 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/psotsan/go-benchmarked-csv-aggregator)](https://goreportcard.com/report/github.com/psotsan/go-benchmarked-csv-aggregator)
+[![Go CI](https://github.com/psotsan/go-benchmarked-csv-aggregator/actions/workflows/ci.yml/badge.svg)](https://github.com/psotsan/go-benchmarked-csv-aggregator/actions/workflows/ci.yml)
 # CSV Aggregator
 
 Go CLI tool to aggregate numeric values from a two‑column CSV file.  
